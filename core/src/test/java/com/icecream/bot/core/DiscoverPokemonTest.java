@@ -61,7 +61,7 @@ public class DiscoverPokemonTest {
     }
 
     @Test
-    public void testDiscoverHappyCase() throws Exception {
+    public void testDiscoverThemHappyCase() throws Exception {
         //Given
         Observable<Map> observable = Observable.just(mMap);
 
@@ -83,7 +83,7 @@ public class DiscoverPokemonTest {
     }
 
     @Test
-    public void testDiscoverHandlesExceptions() throws Exception {
+    public void testDiscoverThemHandlesExceptions() throws Exception {
         //Given
         Observable<Map> observable = Observable.just(mMap);
 
