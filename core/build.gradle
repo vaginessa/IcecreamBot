@@ -8,6 +8,9 @@ jar {
 }
 
 dependencies {
+    // Api
+    compile fileTree(dir: 'libs', include: ['api.jar'])
+
     // Rx
     compile 'io.reactivex:rxjava:1.1.7'
 
