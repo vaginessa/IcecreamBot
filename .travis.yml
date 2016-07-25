@@ -1,0 +1,29 @@
+language: java
+
+sudo: false
+
+jdk:
+  - oraclejdk8
+
+before_install:
+  - chmod +x gradlew
+
+script:
+  - ./gradlew clean build check
+
+branches:
+  only:
+  - master
+  - dev
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+notifications:
+  email: false
