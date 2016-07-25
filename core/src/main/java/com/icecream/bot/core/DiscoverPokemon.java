@@ -10,7 +10,7 @@ public final class DiscoverPokemon {
     private DiscoverPokemon() {
     }
 
-    public static Observable.Transformer<? super Map, ? extends CatchablePokemon> discover() {
+    public static Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
         return observable -> observable
                 .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
                 .flatMapIterable(catchables -> catchables);

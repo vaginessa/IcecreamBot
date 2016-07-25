@@ -2,6 +2,8 @@ package com.icecream.bot.core;
 
 import com.pokegoapi.api.map.Map;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
+import com.pokegoapi.exceptions.LoginFailedException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,9 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DiscoverPokemonTest {
@@ -37,34 +43,64 @@ public class DiscoverPokemonTest {
     CatchablePokemon mPokemon5;
 
     private List<CatchablePokemon> mPokemons;
+    private TestSubscriber<CatchablePokemon> mSubscriber;
 
     @Rule
     public ExpectedException mException = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
+        mSubscriber = new TestSubscriber<>();
         mPokemons = Arrays.asList(mPokemon1, mPokemon2, mPokemon3, mPokemon4, mPokemon5);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        if (mSubscriber != null)
+            mSubscriber.unsubscribe();
+    }
+
     @Test
-    public void testDiscover() throws Exception {
+    public void testDiscoverHappyCase() throws Exception {
         //Given
         Observable<Map> observable = Observable.just(mMap);
-        TestSubscriber<CatchablePokemon> subscriber = new TestSubscriber<>();
 
         //When
         doReturn(mPokemons).when(mMap).getCatchablePokemon();
 
         //Then
         observable
-                .compose(DiscoverPokemon.discover())
-                .subscribe(subscriber);
+                .compose(DiscoverPokemon.discoverThem())
+                .subscribe(mSubscriber);
 
-        subscriber.assertCompleted();
-        subscriber.assertNoErrors();
-        subscriber.assertUnsubscribed();
+        verify(mMap, only()).getCatchablePokemon();
 
-        assertThat("Source emitted unexpected number of items", subscriber.getValueCount(), is(5));
-        assertThat("Source emitted unexpected items", subscriber.getOnNextEvents(), containsInAnyOrder(mPokemon1, mPokemon2, mPokemon3, mPokemon4, mPokemon5));
+        mSubscriber.assertCompleted();
+        mSubscriber.assertNoErrors();
+
+        assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(5));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), containsInAnyOrder(mPokemon1, mPokemon2, mPokemon3, mPokemon4, mPokemon5));
+    }
+
+    @Test
+    public void testDiscoverHandlesExceptions() throws Exception {
+        //Given
+        Observable<Map> observable = Observable.just(mMap);
+
+        //When
+        doThrow(LoginFailedException.class).when(mMap).getCatchablePokemon();
+
+        //Then
+        observable
+                .compose(DiscoverPokemon.discoverThem())
+                .subscribe(mSubscriber);
+
+        verify(mMap, only()).getCatchablePokemon();
+
+        mSubscriber.assertNotCompleted();
+        mSubscriber.assertError(LoginFailedException.class);
+
+        assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(0));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), empty());
     }
 }
