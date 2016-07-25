@@ -1,16 +1,18 @@
 package com.icecream.bot.core;
 
-import POGOProtos.Networking.Responses.EncounterResponseOuterClass.EncounterResponse.Status;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 import com.pokegoapi.api.map.pokemon.EncounterResult;
 import com.pokegoapi.exceptions.LoginFailedException;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import POGOProtos.Networking.Responses.EncounterResponseOuterClass.EncounterResponse.Status;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
@@ -22,6 +24,7 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CatchPokemonTest {
@@ -112,9 +115,7 @@ public class CatchPokemonTest {
                 .subscribe(mSubscriber);
 
         verify(mPokemon, only()).encounterPokemon();
-
-        verifyNoMoreInteractions(mResult);
-        verifyNoMoreInteractions(mPokemon);
+        verifyZeroInteractions(mResult);
 
         mSubscriber.assertNotCompleted();
         mSubscriber.assertError(LoginFailedException.class);
