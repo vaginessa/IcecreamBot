@@ -12,6 +12,5 @@ public final class CatchPokemon {
 
     public static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
         return null;//observable -> observable
-
     }
 }
