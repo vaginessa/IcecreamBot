@@ -299,7 +299,7 @@ public class CatchPokemonTest {
         doReturn(true).when(mEncounterResult).wasSuccessful();
         doReturn(mEncounterResult).when(mPokemon).encounterPokemon();
 
-        doThrow(LoginFailedException.class).when(mPokemon).catchPokemon();
+        doThrow(LoginFailedException.class).when(mPokemon).catchPokemon(any());
 
         //Then
         observable
@@ -315,7 +315,7 @@ public class CatchPokemonTest {
         verifyNoMoreInteractions(mEncounterResult);
 
         mSubscriber.assertNotCompleted();
-        mSubscriber.assertError(NullPointerException.class);
+        mSubscriber.assertError(LoginFailedException.class);
         mSubscriber.assertValueCount(0);
 
         assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(0));

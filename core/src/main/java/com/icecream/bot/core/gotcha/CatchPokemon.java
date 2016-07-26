@@ -35,7 +35,7 @@ public final class CatchPokemon {
         return () -> pokemon.catchPokemon(Pokeball.POKEBALL);
     }
 
-    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attempCatch() {
+    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attemptCatch() {
         return observable -> observable
                 .flatMap(pokemon ->
                         Observable
@@ -69,7 +69,7 @@ public final class CatchPokemon {
                 );
     }
 
-    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attempEncounter() {
+    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
         return observable -> observable
                 .flatMap(pokemon -> Observable
                         .fromCallable(pokemon::encounterPokemon)
@@ -80,7 +80,7 @@ public final class CatchPokemon {
 
     public static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
         return observable -> observable
-                .compose(attempEncounter())
-                .compose(attempCatch());
+                .compose(attemptEncounter())
+                .compose(attemptCatch());
     }
 }
