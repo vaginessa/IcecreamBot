@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.action.capture.exception;
-
-import com.pokegoapi.api.map.pokemon.CatchablePokemon;
-
-import POGOProtos.Networking.Responses.CatchPokemonResponseOuterClass.CatchPokemonResponse.CatchStatus;
+package com.icecream.bot.core.action;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class CaptureExceptionEscape extends CaptureException {
+public abstract class ActionException extends Exception {
 
-    CaptureExceptionEscape(CatchablePokemon pokemon, CatchStatus status) {
-        super(pokemon, status);
+    private final String mReason;
+
+    public ActionException(String reason) {
+        mReason = reason;
+    }
+
+    public String getReason() {
+        return mReason;
     }
 }

@@ -26,19 +26,19 @@ public final class CaptureExceptionFactory {
     private CaptureExceptionFactory() {
     }
 
-    public static CaptureException create(CatchablePokemon pokemon, CatchStatus status) {
+    public static CaptureException create(final CatchablePokemon pokemon, final CatchStatus status) {
         switch (status) {
             case CATCH_SUCCESS:
                 throw new IllegalArgumentException("CATCH_SUCCESS is not a CatchException");
             case CATCH_FLEE:
-                return new CaptureExceptionFlee(pokemon);
-            case CATCH_ESCAPE:
-                return new CaptureExceptionEscape(pokemon);
+                return new CaptureExceptionFlee(pokemon, status);
             case CATCH_MISSED:
-                return new CaptureExceptionMiss(pokemon);
+                return new CaptureExceptionMiss(pokemon, status);
+            case CATCH_ESCAPE:
+                return new CaptureExceptionEscape(pokemon, status);
             case CATCH_ERROR:
             default:
-                return new CaptureExceptionError(pokemon);
+                return new CaptureExceptionError(pokemon, status);
         }
     }
 }

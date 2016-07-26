@@ -75,6 +75,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItHappyCase() throws Exception {
+        System.out.println("Test: testCatchItHappyCase");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -108,6 +110,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItRetryWhenEscapeOrMissed() throws Exception {
+        System.out.println("Test: testCatchItRetryWhenEscapeOrMissed");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -141,6 +145,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItRetryWhenEscapeDontRetryWhenFlee() throws Exception {
+        System.out.println("Test: testCatchItRetryWhenEscapeDontRetryWhenFlee");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -174,6 +180,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItUnknownStatus() throws Exception {
+        System.out.println("Test: testCatchItUnknownStatus");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -207,6 +215,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItDontRetryWhenFlee() throws Exception {
+        System.out.println("Test: testCatchItDontRetryWhenFlee");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -240,6 +250,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItHandlesEncounterError() throws Exception {
+        System.out.println("Test: testCatchItHandlesEncounterError");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -270,6 +282,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItHandlesEncounterExceptions() throws Exception {
+        System.out.println("Test: testCatchItHandlesEncounterExceptions");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -294,6 +308,8 @@ public class CapturePokemonTest {
 
     @Test
     public void testCatchItHandlesCatchExceptions() throws Exception {
+        System.out.println("Test: testCatchItHandlesCatchExceptions");
+
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 

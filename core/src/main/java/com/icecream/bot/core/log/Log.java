@@ -27,12 +27,13 @@ public final class Log {
     private static final String COLOR_PURPLE        = "\033[35m";
     private static final String COLOR_LIGHT_BLUE    = "\033[36m";
     private static final String COLOR_GREY          = "\033[37m";
+    private static final String COLOR_DEFAULT       = "\033[0m";
 
     private Log() {
     }
 
     private static void log(String tag, String color, String format, Object... objects) {
-        System.out.println(String.format("%s[%s] ", color, tag) + String.format(format, objects));
+        System.out.println(String.format("%s[%s] ", color, tag) + String.format(format, objects) + COLOR_DEFAULT);
     }
 
     public static void a(String tag, String format, Object... objects) {

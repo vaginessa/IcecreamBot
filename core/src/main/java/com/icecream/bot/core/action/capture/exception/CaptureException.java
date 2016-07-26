@@ -16,14 +16,18 @@
 
 package com.icecream.bot.core.action.capture.exception;
 
+import com.icecream.bot.core.action.ActionException;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
+import POGOProtos.Networking.Responses.CatchPokemonResponseOuterClass.CatchPokemonResponse.CatchStatus;
+
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-abstract class CaptureException extends Exception {
+abstract class CaptureException extends ActionException {
 
     private final CatchablePokemon mPokemon;
 
-    CaptureException(CatchablePokemon pokemon) {
+    CaptureException(CatchablePokemon pokemon, CatchStatus status) {
+        super(status.name());
         mPokemon = pokemon;
     }
 

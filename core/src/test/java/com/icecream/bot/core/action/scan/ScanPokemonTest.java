@@ -122,6 +122,8 @@ public class ScanPokemonTest {
 
     @Test
     public void testDiscoverThemHandlesExceptions() throws Exception {
+        System.out.println("Test: testDiscoverThemHandlesExceptions");
+
         //Given
         Observable<Map> observable = Observable.just(mMap);
 
