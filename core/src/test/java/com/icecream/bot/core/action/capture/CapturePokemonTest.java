@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import POGOProtos.Enums.PokemonIdOuterClass.PokemonId;
 import POGOProtos.Networking.Responses.CatchPokemonResponseOuterClass.CatchPokemonResponse.CatchStatus;
 import POGOProtos.Networking.Responses.EncounterResponseOuterClass.EncounterResponse.Status;
 import rx.Observable;
@@ -65,6 +66,8 @@ public class CapturePokemonTest {
     public void setUp() throws Exception {
         mSut = new CapturePokemon();
         mSubscriber = new TestSubscriber<>();
+
+        doReturn(PokemonId.BULBASAUR).when(mPokemon).getPokemonId();
     }
 
     @After
@@ -134,7 +137,6 @@ public class CapturePokemonTest {
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
-        verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -169,7 +171,6 @@ public class CapturePokemonTest {
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
-        verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -189,7 +190,7 @@ public class CapturePokemonTest {
         doReturn(true).when(mEncounterResult).wasSuccessful();
         doReturn(mEncounterResult).when(mPokemon).encounterPokemon();
 
-        doReturn(CatchStatus.UNRECOGNIZED).when(mCatchResult).getStatus();
+        doReturn(CatchStatus.CATCH_ERROR).when(mCatchResult).getStatus();
         doReturn(mCatchResult).when(mPokemon).catchPokemon(any());
 
         //Then
@@ -204,7 +205,6 @@ public class CapturePokemonTest {
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
-        verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -239,7 +239,6 @@ public class CapturePokemonTest {
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
-        verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();

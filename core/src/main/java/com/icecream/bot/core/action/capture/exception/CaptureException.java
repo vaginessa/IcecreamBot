@@ -22,16 +22,28 @@ import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 import POGOProtos.Networking.Responses.CatchPokemonResponseOuterClass.CatchPokemonResponse.CatchStatus;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-abstract class CaptureException extends ActionException {
+public abstract class CaptureException extends ActionException {
 
+    private final CatchStatus mStatus;
     private final CatchablePokemon mPokemon;
 
     CaptureException(CatchablePokemon pokemon, CatchStatus status) {
         super(status.name());
         mPokemon = pokemon;
+        mStatus = status;
     }
 
     public final CatchablePokemon getPokemon() {
         return mPokemon;
+    }
+
+    public final boolean isRetry() {
+        switch (mStatus) {
+            case CATCH_MISSED:
+            case CATCH_ESCAPE:
+                return true;
+            default:
+                return false;
+        }
     }
 }

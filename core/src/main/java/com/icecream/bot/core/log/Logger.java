@@ -16,6 +16,7 @@
 
 package com.icecream.bot.core.log;
 
+import com.icecream.bot.core.action.capture.exception.CaptureException;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
@@ -28,7 +29,7 @@ public final class Logger {
     }
 
     public static void scanPokemon(final CatchablePokemon pokemon) {
-        Log.i(FOUND, "Pokemon #%3d %15s expires in %d seconds",
+        Log.i(FOUND, "Pokemon #%3d %11s expires in %d seconds",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),
                 Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
@@ -36,10 +37,18 @@ public final class Logger {
     }
 
     public static void capturePokemon(final CatchablePokemon pokemon) {
-        Log.i(FOUND, "Pokemon #%3d %15s expires in %d seconds",
+        Log.i(FOUND, "Pokemon #%3d %11s expires in %d seconds",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),
                 Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
+        );
+    }
+
+    public static void captureErrorPokemon(CaptureException error) {
+        Log.e(error.getReason(), "Cannot catch pokemon #%3d %11s%s",
+                error.getPokemon().getPokemonId().getNumber(),
+                error.getPokemon().getPokemonId().name(),
+                error.isRetry() ? ". Will retry" : ""
         );
     }
 }

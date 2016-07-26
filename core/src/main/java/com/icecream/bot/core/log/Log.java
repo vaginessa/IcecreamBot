@@ -17,7 +17,7 @@
 package com.icecream.bot.core.log;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class Log {
+final class Log {
 
     private static final String COLOR_WHITE         = "\033[30m";
     private static final String COLOR_RED           = "\033[31m";
@@ -32,31 +32,31 @@ public final class Log {
     private Log() {
     }
 
-    private static void log(String tag, String color, String format, Object... objects) {
-        System.out.println(String.format("%s[%s] ", color, tag) + String.format(format, objects) + COLOR_DEFAULT);
+    static void log(String tag, String color, String format, Object... objects) {
+        System.out.println(color + String.format("[%-12s] ", tag) + String.format(format, objects) + COLOR_DEFAULT);
     }
 
-    public static void a(String tag, String format, Object... objects) {
+    static void a(String tag, String format, Object... objects) {
         log(tag, COLOR_LIGHT_BLUE, format, objects);
     }
 
-    public static void d(String tag, String format, Object... objects) {
+    static void d(String tag, String format, Object... objects) {
         log(tag, COLOR_DARK_BLUE, format, objects);
     }
 
-    public static void e(String tag, String format, Object... objects) {
+    static void e(String tag, String format, Object... objects) {
         log(tag, COLOR_RED, format, objects);
     }
 
-    public static void i(String tag, String format, Object... objects) {
+    static void i(String tag, String format, Object... objects) {
         log(tag, COLOR_GREEN, format, objects);
     }
 
-    public static void v(String tag, String format, Object... objects) {
+    static void v(String tag, String format, Object... objects) {
         log(tag, COLOR_PURPLE, format, objects);
     }
 
-    public static void w(String tag, String format, Object... objects) {
+    static void w(String tag, String format, Object... objects) {
         log(tag, COLOR_YELLOW, format, objects);
     }
 }
