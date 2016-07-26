@@ -18,6 +18,9 @@ package com.icecream.bot.core.gotcha;
 
 import java.util.concurrent.Callable;
 
+import com.icecream.bot.core.gotcha.exception.CatchEscapeException;
+import com.icecream.bot.core.gotcha.exception.CatchFleeException;
+import com.icecream.bot.core.gotcha.exception.CatchMissedException;
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
