@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.discover;
-
-import com.pokegoapi.api.map.Map;
-import com.pokegoapi.api.map.pokemon.CatchablePokemon;
-import rx.Observable;
+package com.icecream.bot.core.capture.exception;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class DiscoverPokemon {
-
-    private DiscoverPokemon() {
-    }
-
-    public static Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
-        return observable -> observable
-                .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
-                .flatMapIterable(catchables -> catchables);
-    }
+public class CaptureException extends Exception {
 }

@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.gotcha.exception;
+package com.icecream.bot.core.scan;
+
+import com.pokegoapi.api.map.Map;
+import com.pokegoapi.api.map.pokemon.CatchablePokemon;
+import rx.Observable;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class CatchMissedException extends CatchException {
+public final class ScanPokemon {
+
+    private ScanPokemon() {
+    }
+
+    public static Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
+        return observable -> observable
+                .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
+                .flatMapIterable(catchables -> catchables);
+    }
 }

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.gotcha;
+package com.icecream.bot.core.capture;
 
 import java.util.concurrent.Callable;
 
-import com.icecream.bot.core.gotcha.exception.CatchEscapeException;
-import com.icecream.bot.core.gotcha.exception.CatchFleeException;
-import com.icecream.bot.core.gotcha.exception.CatchMissedException;
+import com.icecream.bot.core.capture.exception.CaptureEscapeException;
+import com.icecream.bot.core.capture.exception.CaptureFleeException;
+import com.icecream.bot.core.capture.exception.CaptureMissedException;
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
@@ -29,9 +29,9 @@ import com.pokegoapi.api.map.pokemon.EncounterResult;
 import rx.Observable;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class CatchPokemon {
+public final class CapturePokemon {
 
-    private CatchPokemon() {
+    private CapturePokemon() {
     }
 
     private static Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
@@ -48,22 +48,22 @@ public final class CatchPokemon {
                                         case CATCH_SUCCESS:
                                             return Observable.just(result);
                                         case CATCH_FLEE:
-                                            return Observable.error(new CatchFleeException());
+                                            return Observable.error(new CaptureFleeException());
                                         case CATCH_ESCAPE:
-                                            return Observable.error(new CatchMissedException());
+                                            return Observable.error(new CaptureMissedException());
                                         case CATCH_MISSED:
-                                            return Observable.error(new CatchEscapeException());
+                                            return Observable.error(new CaptureEscapeException());
                                         default:
                                             return Observable.empty();
                                     }
                                 })
                                 .retryWhen(errors -> errors
-                                        .takeWhile(error -> !(error instanceof CatchFleeException))
+                                        .takeWhile(error -> !(error instanceof CaptureFleeException))
                                         .flatMap(error -> {
-                                            if (error instanceof CatchEscapeException) {
+                                            if (error instanceof CaptureEscapeException) {
                                                 return Observable.just(pokemon);
                                             }
-                                            if (error instanceof CatchMissedException) {
+                                            if (error instanceof CaptureMissedException) {
                                                 return Observable.just(pokemon);
                                             }
                                             return Observable.<CatchResult>error(error);

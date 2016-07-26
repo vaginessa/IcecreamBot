@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.discover;
+package com.icecream.bot.core.scan;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DiscoverPokemonTest {
+public class ScanPokemonTest {
 
     @Mock
     Map mMap;
@@ -88,7 +88,7 @@ public class DiscoverPokemonTest {
 
         //Then
         observable
-                .compose(DiscoverPokemon.discoverThem())
+                .compose(ScanPokemon.discoverThem())
                 .subscribe(mSubscriber);
 
         verify(mMap, only()).getCatchablePokemon();
@@ -110,7 +110,7 @@ public class DiscoverPokemonTest {
 
         //Then
         observable
-                .compose(DiscoverPokemon.discoverThem())
+                .compose(ScanPokemon.discoverThem())
                 .subscribe(mSubscriber);
 
         verify(mMap, only()).getCatchablePokemon();

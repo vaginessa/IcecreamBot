@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.gotcha;
+package com.icecream.bot.core.capture;
 
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CatchPokemonTest {
+public class CapturePokemonTest {
 
     @Mock
     private CatchablePokemon mPokemon;
@@ -85,7 +85,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(1)).catchPokemon(any());
@@ -118,7 +118,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
@@ -151,7 +151,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
@@ -184,7 +184,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());
@@ -217,7 +217,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());
@@ -249,7 +249,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mEncounterResult).wasSuccessful();
@@ -276,7 +276,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, only()).encounterPokemon();
@@ -303,7 +303,7 @@ public class CatchPokemonTest {
 
         //Then
         observable
-                .compose(CatchPokemon.catchIt())
+                .compose(CapturePokemon.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());
