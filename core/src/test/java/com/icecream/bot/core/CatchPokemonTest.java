@@ -72,11 +72,13 @@ public class CatchPokemonTest {
                 .compose(CatchPokemon.catchIt())
                 .subscribe(mSubscriber);
 
-        verify(mEncounterResult, times(1)).wasSuccessful();
-        verify(mPokemon, times(1)).encounterPokemon();
         verify(mPokemon, times(1)).catchPokemon(any());
+        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mCatchResult, times(1)).getStatus();
+        verify(mEncounterResult, times(1)).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
+        verifyNoMoreInteractions(mCatchResult);
         verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
@@ -84,6 +86,72 @@ public class CatchPokemonTest {
 
         assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(1));
         assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), containsInAnyOrder(mCatchResult));
+    }
+
+    @Test
+    public void testCatchItRetryWhenEscapeOrMissed() throws Exception {
+        //Given
+        Observable<CatchablePokemon> observable = Observable.just(mPokemon);
+
+        //When
+        doReturn(true).when(mEncounterResult).wasSuccessful();
+        doReturn(mEncounterResult).when(mPokemon).encounterPokemon();
+
+        doReturn(CatchStatus.CATCH_ESCAPE).doReturn(CatchStatus.CATCH_MISSED).doReturn(CatchStatus.CATCH_SUCCESS).when(mCatchResult).getStatus();
+        doReturn(mCatchResult).when(mPokemon).catchPokemon(any());
+
+        //Then
+        observable
+                .compose(CatchPokemon.catchIt())
+                .subscribe(mSubscriber);
+
+        verify(mPokemon, times(3)).catchPokemon(any());
+        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mCatchResult, times(3)).getStatus();
+        verify(mEncounterResult, times(1)).wasSuccessful();
+
+        verifyNoMoreInteractions(mEncounterResult);
+        verifyNoMoreInteractions(mCatchResult);
+        verifyNoMoreInteractions(mPokemon);
+
+        mSubscriber.assertCompleted();
+        mSubscriber.assertNoErrors();
+
+        assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(1));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), containsInAnyOrder(mCatchResult));
+    }
+
+    @Test
+    public void testCatchItDontRetryWhenFlee() throws Exception {
+        //Given
+        Observable<CatchablePokemon> observable = Observable.just(mPokemon);
+
+        //When
+        doReturn(true).when(mEncounterResult).wasSuccessful();
+        doReturn(mEncounterResult).when(mPokemon).encounterPokemon();
+
+        doReturn(CatchStatus.CATCH_FLEE).when(mCatchResult).getStatus();
+        doReturn(mCatchResult).when(mPokemon).catchPokemon(any());
+
+        //Then
+        observable
+                .compose(CatchPokemon.catchIt())
+                .subscribe(mSubscriber);
+
+        verify(mPokemon, times(1)).catchPokemon(any());
+        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mCatchResult, times(1)).getStatus();
+        verify(mEncounterResult, times(1)).wasSuccessful();
+
+        verifyNoMoreInteractions(mEncounterResult);
+        verifyNoMoreInteractions(mCatchResult);
+        verifyNoMoreInteractions(mPokemon);
+
+        mSubscriber.assertCompleted();
+        mSubscriber.assertNoErrors();
+
+        assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(0));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), is(empty()));
     }
 
     @Test

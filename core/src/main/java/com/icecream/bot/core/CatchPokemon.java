@@ -1,5 +1,7 @@
 package com.icecream.bot.core;
 
+import java.util.concurrent.Callable;
+
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
@@ -13,16 +15,15 @@ public final class CatchPokemon {
     private CatchPokemon() {
     }
 
-    public static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
+    private static Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
+        return () -> pokemon.catchPokemon(Pokeball.POKEBALL);
+    }
+
+    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attempCatch() {
         return observable -> observable
-                .flatMap(pokemon -> Observable
-                        .fromCallable(pokemon::encounterPokemon)
-                        .filter(EncounterResult::wasSuccessful)
-                        .map(data -> pokemon)
-                )
                 .flatMap(pokemon ->
                         Observable
-                                .fromCallable(() -> pokemon.catchPokemon(Pokeball.POKEBALL))
+                                .fromCallable(throwPokeball(pokemon))
                                 .flatMap(result -> {
                                     switch (result.getStatus()) {
                                         case CATCH_SUCCESS:
@@ -36,17 +37,29 @@ public final class CatchPokemon {
                                             return Observable.empty();
                                     }
                                 })
-                                .retryWhen(errors -> errors.flatMap(error -> {
-                                    if (error instanceof CatchFleeException) {
-                                        return Observable.empty();
-                                    }
-
-                                    if (error instanceof CatchEscapeException) {
-                                        return Observable.just(null);
-                                    }
-
-                                    return Observable.error(error);
-                                }))
+                                .retryWhen(errors -> errors
+                                        .takeWhile(error -> !(error instanceof CatchFleeException))
+                                        .flatMap(error -> {
+                                            if (error instanceof CatchEscapeException) {
+                                                return Observable.just(pokemon);
+                                            }
+                                            return Observable.<CatchResult>error(error);
+                                        }))
                 );
+    }
+
+    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attempEncounter() {
+        return observable -> observable
+                .flatMap(pokemon -> Observable
+                        .fromCallable(pokemon::encounterPokemon)
+                        .filter(EncounterResult::wasSuccessful)
+                        .map(result -> pokemon)
+                );
+    }
+
+    public static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
+        return observable -> observable
+                .compose(attempEncounter())
+                .compose(attempCatch());
     }
 }
