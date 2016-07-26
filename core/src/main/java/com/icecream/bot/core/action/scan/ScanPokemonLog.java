@@ -16,23 +16,21 @@
 
 package com.icecream.bot.core.action.scan;
 
-import com.pokegoapi.api.map.Map;
+import com.icecream.bot.core.log.Log;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
-import rx.Observable;
-
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class ScanPokemon {
+final class ScanPokemonLog {
 
-    public ScanPokemon() {
+    private static final String FOUND = "FOUND";
+
+    private ScanPokemonLog() {
     }
 
-    public final Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
-        return observable -> observable
-                .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
-                .flatMapIterable(catchables -> catchables)
-                .toSortedList((pokemon1, pokemon2) -> Long.compare(pokemon1.getExpirationTimestampMs(), pokemon2.getExpirationTimestampMs()))
-                .flatMapIterable(catchables -> catchables)
-                .doOnNext(ScanPokemonLog::scanPokemon);
+    static void scanPokemon(CatchablePokemon pokemon) {
+        Log.w(FOUND, "Pokemon %-15s expires in %d seconds",
+                pokemon.getPokemonId().name(),
+                Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
+        );
     }
 }

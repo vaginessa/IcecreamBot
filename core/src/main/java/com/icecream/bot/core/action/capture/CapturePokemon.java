@@ -20,7 +20,6 @@ import java.util.concurrent.Callable;
 
 import com.icecream.bot.core.action.capture.exception.CaptureException;
 import com.icecream.bot.core.action.capture.exception.CaptureExceptionFactory;
-import com.icecream.bot.core.log.Logger;
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
@@ -57,15 +56,15 @@ public class CapturePokemon {
                 .flatMap(pokemon ->
                         Observable
                                 .fromCallable(throwPokeball(pokemon))
-                                .doOnNext(result -> Logger.captureTryPokemon(pokemon, result))
+                                .doOnNext(result -> CapturePokemonLog.captureTryPokemon(pokemon, result))
                                 .flatMap(result -> {
                                     final CatchStatus status = result.getStatus();
                                     return status == CATCH_SUCCESS ? Observable.just(result) : Observable.error(CaptureExceptionFactory.create(pokemon, status));
                                 })
-                                .doOnNext(result -> Logger.capturePokemon(pokemon, result))
+                                .doOnNext(result -> CapturePokemonLog.capturePokemon(pokemon, result))
                                 .doOnError(error -> {
                                     if (error instanceof CaptureException) {
-                                        Logger.captureErrorPokemon((CaptureException) error);
+                                        CapturePokemonLog.captureErrorPokemon((CaptureException) error);
                                     }
                                 })
                                 .retryWhen(errors -> errors
