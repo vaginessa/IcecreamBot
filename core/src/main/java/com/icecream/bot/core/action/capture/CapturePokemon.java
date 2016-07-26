@@ -62,6 +62,7 @@ public class CapturePokemon {
                                     final CatchStatus status = result.getStatus();
                                     return status == CATCH_SUCCESS ? Observable.just(result) : Observable.error(CaptureExceptionFactory.create(pokemon, status));
                                 })
+                                .doOnNext(result -> Logger.capturePokemon(pokemon, result))
                                 .doOnError(error -> {
                                     if (error instanceof CaptureException) {
                                         Logger.captureErrorPokemon((CaptureException) error);

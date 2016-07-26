@@ -33,7 +33,7 @@ final class Log {
     }
 
     static void log(String tag, String color, String format, Object... objects) {
-        System.out.println(color + String.format("[%-12s] ", tag) + String.format(format, objects) + COLOR_DEFAULT);
+        System.out.println(color + String.format("[%-13s] ", tag) + String.format(format, objects) + COLOR_DEFAULT);
     }
 
     static void a(String tag, String format, Object... objects) {

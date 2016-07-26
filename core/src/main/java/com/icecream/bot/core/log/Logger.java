@@ -25,27 +25,32 @@ public final class Logger {
 
     private static final String FOUND = "FOUND";
     private static final String CATCH = "CATCH";
+    private static final String CATCH_SUCCESS = "CATCH_SUCCESS";
 
     private Logger() {
     }
 
-    public static void scanPokemon(final CatchablePokemon pokemon) {
-        Log.i(FOUND, "Pokemon #%3d %11s expires in %d seconds",
+    public static void scanPokemon(CatchablePokemon pokemon) {
+        Log.w(FOUND, "Pokemon #%3d %11s expires in %d seconds",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),
                 Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
         );
     }
 
-    public static void captureTryPokemon(final CatchablePokemon pokemon, final CatchResult result) {
-        Log.i(CATCH, "Trying catch pokemon #%3d %11s with %3.2f%% miss rate",
+    public static void captureTryPokemon(CatchablePokemon pokemon, CatchResult result) {
+        Log.w(CATCH, "Trying catch pokemon #%3d %11s with %3.2f%% miss rate",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),
                 result.getMissPercent() * 100
         );
     }
 
-    public static void captureErrorPokemon(final CaptureException error) {
+    public static void capturePokemon(CatchablePokemon pokemon, CatchResult result) {
+        Log.i(CATCH_SUCCESS, "Captured");
+    }
+
+    public static void captureErrorPokemon(CaptureException error) {
         Log.e(error.getReason(), "Cannot catch pokemon #%3d %11s%s",
                 error.getPokemon().getPokemonId().getNumber(),
                 error.getPokemon().getPokemonId().name(),
