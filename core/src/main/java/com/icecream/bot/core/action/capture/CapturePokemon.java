@@ -37,8 +37,19 @@ public class CapturePokemon {
     public CapturePokemon() {
     }
 
-    private Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
-        return () -> pokemon.catchPokemon(Pokeball.POKEBALL);
+    public final Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
+        return observable -> observable
+                .compose(attemptEncounter())
+                .compose(attemptCatch());
+    }
+
+    private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
+        return observable -> observable
+                .flatMap(pokemon -> Observable
+                        .fromCallable(pokemon::encounterPokemon)
+                        .filter(EncounterResult::wasSuccessful)
+                        .map(result -> pokemon)
+                );
     }
 
     private Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attemptCatch() {
@@ -56,37 +67,29 @@ public class CapturePokemon {
                                     }
                                 })
                                 .retryWhen(errors -> errors
-                                        .takeWhile(error -> {
-                                            if (error instanceof CaptureException) {
-                                                CaptureException exception = (CaptureException) error;
-                                                return exception.isRetry();
-                                            }
-                                            return true;
-                                        })
-                                        .flatMap(error -> {
-                                            if (error instanceof CaptureException) {
-                                                CaptureException exception = (CaptureException) error;
-                                                if (exception.isRetry())
-                                                    return Observable.just(exception.getPokemon());
-                                            }
-                                            return Observable.<CatchResult>error(error);
-                                        })
+                                        .takeWhile(this::cannotRetryException)
+                                        .flatMap(error -> canRetryException(error) ? Observable.just(pokemon) : Observable.<CatchResult>error(error))
                                 )
                 );
     }
 
-    private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
-        return observable -> observable
-                .flatMap(pokemon -> Observable
-                        .fromCallable(pokemon::encounterPokemon)
-                        .filter(EncounterResult::wasSuccessful)
-                        .map(result -> pokemon)
-                );
+    private Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
+        return () -> pokemon.catchPokemon(Pokeball.POKEBALL);
     }
 
-    public final Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
-        return observable -> observable
-                .compose(attemptEncounter())
-                .compose(attemptCatch());
+    private boolean canRetryException(Throwable throwable) {
+        if (throwable instanceof CaptureException) {
+            CaptureException exception = (CaptureException) throwable;
+            return exception.isRetry();
+        }
+        return false;
+    }
+
+    private boolean cannotRetryException(Throwable throwable) {
+        if (throwable instanceof CaptureException) {
+            CaptureException exception = (CaptureException) throwable;
+            return exception.isRetry();
+        }
+        return true;
     }
 }
