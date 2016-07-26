@@ -19,6 +19,7 @@ package com.icecream.bot.core;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
+import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.pokegoapi.api.PokemonGo;
 import com.pokegoapi.auth.PtcLogin;
@@ -42,10 +43,12 @@ public class Bot {
         mPokemonGo.setLocation(latitude, longitude, 0);
 
         ScanPokemon scanPokemon = new ScanPokemon();
+        CapturePokemon capturePokemon = new CapturePokemon();
 
         Observable
                 .just(mPokemonGo.getMap())
                 .compose(scanPokemon.discoverThem())
+                .compose(capturePokemon.catchIt())
                 .subscribe(o -> {}, Throwable::printStackTrace);
     }
 

@@ -16,6 +16,8 @@
 
 package com.icecream.bot.core.action.capture;
 
+import java.util.Arrays;
+
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 import com.pokegoapi.api.map.pokemon.EncounterResult;
@@ -66,6 +68,10 @@ public class CapturePokemonTest {
     public void setUp() throws Exception {
         mSut = new CapturePokemon();
         mSubscriber = new TestSubscriber<>();
+
+        doReturn(Arrays.asList(500, 10, 100, 100)).when(mCatchResult).getXpList();
+        doReturn(Arrays.asList(100, 100, 100)).when(mCatchResult).getStardustList();
+        doReturn(Arrays.asList(1, 1, 1)).when(mCatchResult).getCandyList();
 
         doReturn(PokemonId.BULBASAUR).when(mPokemon).getPokemonId();
         doReturn(0.50).when(mCatchResult).getMissPercent();
