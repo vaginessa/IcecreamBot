@@ -17,6 +17,7 @@
 package com.icecream.bot.core.log;
 
 import com.icecream.bot.core.action.capture.exception.CaptureException;
+import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
@@ -36,15 +37,15 @@ public final class Logger {
         );
     }
 
-    public static void capturePokemon(final CatchablePokemon pokemon) {
-        Log.i(FOUND, "Pokemon #%3d %11s expires in %d seconds",
+    public static void captureTryPokemon(final CatchablePokemon pokemon, final CatchResult result) {
+        Log.i(CATCH, "Trying catch pokemon #%3d %11s with %3.2f%% miss rate",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),
-                Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
+                result.getMissPercent() * 100
         );
     }
 
-    public static void captureErrorPokemon(CaptureException error) {
+    public static void captureErrorPokemon(final CaptureException error) {
         Log.e(error.getReason(), "Cannot catch pokemon #%3d %11s%s",
                 error.getPokemon().getPokemonId().getNumber(),
                 error.getPokemon().getPokemonId().name(),

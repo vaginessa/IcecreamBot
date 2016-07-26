@@ -39,11 +39,11 @@ public class CapturePokemon {
 
     public final Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
         return observable -> observable
-                .compose(attemptEncounter())
-                .compose(attemptCatch());
+                .compose(tryEncounter())
+                .compose(tryCatch());
     }
 
-    private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
+    private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> tryEncounter() {
         return observable -> observable
                 .flatMap(pokemon -> Observable
                         .fromCallable(pokemon::encounterPokemon)
@@ -52,11 +52,12 @@ public class CapturePokemon {
                 );
     }
 
-    private Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attemptCatch() {
+    private Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> tryCatch() {
         return observable -> observable
                 .flatMap(pokemon ->
                         Observable
                                 .fromCallable(throwPokeball(pokemon))
+                                .doOnNext(result -> Logger.captureTryPokemon(pokemon, result))
                                 .flatMap(result -> {
                                     final CatchStatus status = result.getStatus();
                                     return status == CATCH_SUCCESS ? Observable.just(result) : Observable.error(CaptureExceptionFactory.create(pokemon, status));

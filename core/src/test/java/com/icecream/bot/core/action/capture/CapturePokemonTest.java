@@ -68,6 +68,7 @@ public class CapturePokemonTest {
         mSubscriber = new TestSubscriber<>();
 
         doReturn(PokemonId.BULBASAUR).when(mPokemon).getPokemonId();
+        doReturn(0.50).when(mCatchResult).getMissPercent();
     }
 
     @After
@@ -95,14 +96,12 @@ public class CapturePokemonTest {
                 .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
-        verify(mPokemon, times(1)).catchPokemon(any());
-        verify(mPokemon, times(1)).encounterPokemon();
-        verify(mCatchResult, times(1)).getStatus();
-        verify(mEncounterResult, times(1)).wasSuccessful();
+        verify(mPokemon).catchPokemon(any());
+        verify(mPokemon).encounterPokemon();
+        verify(mCatchResult).getStatus();
+        verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
-        verifyNoMoreInteractions(mCatchResult);
-        verifyNoMoreInteractions(mPokemon);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -131,12 +130,11 @@ public class CapturePokemonTest {
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
-        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mPokemon).encounterPokemon();
         verify(mCatchResult, times(3)).getStatus();
-        verify(mEncounterResult, times(1)).wasSuccessful();
+        verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
-        verifyNoMoreInteractions(mCatchResult);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -165,12 +163,11 @@ public class CapturePokemonTest {
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
-        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mPokemon).encounterPokemon();
         verify(mCatchResult, times(3)).getStatus();
-        verify(mEncounterResult, times(1)).wasSuccessful();
+        verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
-        verifyNoMoreInteractions(mCatchResult);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -204,7 +201,6 @@ public class CapturePokemonTest {
         verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
-        verifyNoMoreInteractions(mCatchResult);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
@@ -238,7 +234,6 @@ public class CapturePokemonTest {
         verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
-        verifyNoMoreInteractions(mCatchResult);
 
         mSubscriber.assertCompleted();
         mSubscriber.assertNoErrors();
