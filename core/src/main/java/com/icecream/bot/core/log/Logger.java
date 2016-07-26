@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.scan;
+package com.icecream.bot.core.log;
 
-import com.icecream.bot.core.log.Logger;
-import com.pokegoapi.api.map.Map;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
-import rx.Observable;
-
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class ScanPokemon {
+public final class Logger {
 
-    public ScanPokemon() {
+    private static final String FOUND = "FOUND";
+
+    private Logger() {
     }
 
-    public final Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
-        return observable -> observable
-                .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
-                .flatMapIterable(catchables -> catchables)
-                .toSortedList((pokemon1, pokemon2) -> Long.compare(pokemon1.getExpirationTimestampMs(), pokemon2.getExpirationTimestampMs()))
-                .flatMapIterable(catchables -> catchables)
-                .doOnNext(Logger::scanPokemon);
+    public static void scanPokemon(final CatchablePokemon pokemon) {
+        Log.i(FOUND, "Pokemon #%3d %15s expires in %d seconds",
+                pokemon.getPokemonId().getNumber(),
+                pokemon.getPokemonId().name(),
+                Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
+        );
     }
 }

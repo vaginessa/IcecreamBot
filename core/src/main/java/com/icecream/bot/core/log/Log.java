@@ -16,8 +16,6 @@
 
 package com.icecream.bot.core.log;
 
-import com.pokegoapi.api.map.pokemon.CatchablePokemon;
-
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public final class Log {
 
@@ -33,15 +31,31 @@ public final class Log {
     private Log() {
     }
 
-    private static void bot(String tag, String color, String format, Object... objects) {
+    private static void log(String tag, String color, String format, Object... objects) {
         System.out.println(String.format("%s[%s] ", color, tag) + String.format(format, objects));
     }
 
-    public static void scanPokemon(final CatchablePokemon pokemon) {
-        bot("FOUND", COLOR_YELLOW, "Pokemon #%3d %15s, expires in %d seconds",
-                pokemon.getPokemonId().getNumber(),
-                pokemon.getPokemonId().name(),
-                Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
-        );
+    public static void a(String tag, String format, Object... objects) {
+        log(tag, COLOR_LIGHT_BLUE, format, objects);
+    }
+
+    public static void d(String tag, String format, Object... objects) {
+        log(tag, COLOR_DARK_BLUE, format, objects);
+    }
+
+    public static void e(String tag, String format, Object... objects) {
+        log(tag, COLOR_RED, format, objects);
+    }
+
+    public static void i(String tag, String format, Object... objects) {
+        log(tag, COLOR_GREEN, format, objects);
+    }
+
+    public static void v(String tag, String format, Object... objects) {
+        log(tag, COLOR_PURPLE, format, objects);
+    }
+
+    public static void w(String tag, String format, Object... objects) {
+        log(tag, COLOR_YELLOW, format, objects);
     }
 }

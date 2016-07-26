@@ -32,11 +32,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import POGOProtos.Enums.PokemonIdOuterClass.PokemonId;
 import rx.Observable;
 import rx.observers.TestSubscriber;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
@@ -81,11 +82,26 @@ public class ScanPokemonTest {
     }
 
     @Test
-    public void testDiscoverThemHappyCase() throws Exception {
+    public void testDiscoverThemIsSorted() throws Exception {
         //Given
         Observable<Map> observable = Observable.just(mMap);
 
         //When
+        doReturn(PokemonId.BULBASAUR).when(mPokemon1).getPokemonId();
+        doReturn(System.currentTimeMillis() + 10000).when(mPokemon1).getExpirationTimestampMs();
+
+        doReturn(PokemonId.SQUIRTLE).when(mPokemon2).getPokemonId();
+        doReturn(System.currentTimeMillis() + 13000).when(mPokemon2).getExpirationTimestampMs();
+
+        doReturn(PokemonId.CHARMANDER).when(mPokemon3).getPokemonId();
+        doReturn(System.currentTimeMillis() + 11000).when(mPokemon3).getExpirationTimestampMs();
+
+        doReturn(PokemonId.PIKACHU).when(mPokemon4).getPokemonId();
+        doReturn(System.currentTimeMillis() + 14000).when(mPokemon4).getExpirationTimestampMs();
+
+        doReturn(PokemonId.CHANSEY).when(mPokemon5).getPokemonId();
+        doReturn(System.currentTimeMillis() + 12000).when(mPokemon5).getExpirationTimestampMs();
+
         doReturn(mPokemons).when(mMap).getCatchablePokemon();
 
         //Then
@@ -99,7 +115,7 @@ public class ScanPokemonTest {
         mSubscriber.assertNoErrors();
 
         assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(5));
-        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), containsInAnyOrder(mPokemon1, mPokemon2, mPokemon3, mPokemon4, mPokemon5));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnNextEvents(), contains(mPokemon1, mPokemon3, mPokemon5, mPokemon2, mPokemon4));
     }
 
     @Test
