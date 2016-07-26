@@ -58,10 +58,12 @@ public class CapturePokemonTest {
     @Mock
     private CatchResult mCatchResult;
 
+    private CapturePokemon mSut;
     private TestSubscriber<CatchResult> mSubscriber;
 
     @Before
     public void setUp() throws Exception {
+        mSut = new CapturePokemon();
         mSubscriber = new TestSubscriber<>();
     }
 
@@ -85,7 +87,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(1)).catchPokemon(any());
@@ -118,7 +120,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
@@ -151,7 +153,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, times(3)).catchPokemon(any());
@@ -184,7 +186,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());
@@ -217,7 +219,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());
@@ -249,7 +251,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mEncounterResult).wasSuccessful();
@@ -276,7 +278,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon, only()).encounterPokemon();
@@ -303,7 +305,7 @@ public class CapturePokemonTest {
 
         //Then
         observable
-                .compose(CapturePokemon.catchIt())
+                .compose(mSut.catchIt())
                 .subscribe(mSubscriber);
 
         verify(mPokemon).catchPokemon(any());

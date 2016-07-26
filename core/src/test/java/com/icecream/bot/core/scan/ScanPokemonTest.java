@@ -60,6 +60,7 @@ public class ScanPokemonTest {
     @Mock
     CatchablePokemon mPokemon5;
 
+    private ScanPokemon mSut;
     private List<CatchablePokemon> mPokemons;
     private TestSubscriber<CatchablePokemon> mSubscriber;
 
@@ -68,6 +69,7 @@ public class ScanPokemonTest {
 
     @Before
     public void setUp() throws Exception {
+        mSut = new ScanPokemon();
         mSubscriber = new TestSubscriber<>();
         mPokemons = Arrays.asList(mPokemon1, mPokemon2, mPokemon3, mPokemon4, mPokemon5);
     }
@@ -88,7 +90,7 @@ public class ScanPokemonTest {
 
         //Then
         observable
-                .compose(ScanPokemon.discoverThem())
+                .compose(mSut.discoverThem())
                 .subscribe(mSubscriber);
 
         verify(mMap, only()).getCatchablePokemon();
@@ -110,7 +112,7 @@ public class ScanPokemonTest {
 
         //Then
         observable
-                .compose(ScanPokemon.discoverThem())
+                .compose(mSut.discoverThem())
                 .subscribe(mSubscriber);
 
         verify(mMap, only()).getCatchablePokemon();

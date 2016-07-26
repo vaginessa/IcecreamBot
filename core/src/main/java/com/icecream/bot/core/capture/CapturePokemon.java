@@ -34,16 +34,16 @@ import rx.Observable;
 import static POGOProtos.Networking.Responses.CatchPokemonResponseOuterClass.CatchPokemonResponse.CatchStatus.CATCH_SUCCESS;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class CapturePokemon {
+public class CapturePokemon {
 
-    private CapturePokemon() {
+    public CapturePokemon() {
     }
 
-    private static Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
+    private Callable<CatchResult> throwPokeball(final CatchablePokemon pokemon) {
         return () -> pokemon.catchPokemon(Pokeball.POKEBALL);
     }
 
-    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attemptCatch() {
+    private Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> attemptCatch() {
         return observable -> observable
                 .flatMap(pokemon ->
                         Observable
@@ -59,7 +59,7 @@ public final class CapturePokemon {
                 );
     }
 
-    private static Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
+    private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> attemptEncounter() {
         return observable -> observable
                 .flatMap(pokemon -> Observable
                         .fromCallable(pokemon::encounterPokemon)
@@ -68,7 +68,7 @@ public final class CapturePokemon {
                 );
     }
 
-    public static Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
+    public final Observable.Transformer<? super CatchablePokemon, ? extends CatchResult> catchIt() {
         return observable -> observable
                 .compose(attemptEncounter())
                 .compose(attemptCatch());

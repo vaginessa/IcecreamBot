@@ -21,12 +21,12 @@ import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 import rx.Observable;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class ScanPokemon {
+public class ScanPokemon {
 
-    private ScanPokemon() {
+    public ScanPokemon() {
     }
 
-    public static Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
+    public final Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
         return observable -> observable
                 .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
                 .flatMapIterable(catchables -> catchables);
