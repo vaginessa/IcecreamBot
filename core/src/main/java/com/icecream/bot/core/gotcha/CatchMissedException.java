@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core;
+package com.icecream.bot.core.gotcha;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class CatchFleeException extends CatchException {
-
+public class CatchMissedException extends CatchException {
 }
