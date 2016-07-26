@@ -19,11 +19,7 @@ package com.icecream.bot.core.action.capture;
 import java.util.concurrent.Callable;
 
 import com.icecream.bot.core.action.capture.exception.CaptureException;
-import com.icecream.bot.core.action.capture.exception.CaptureExceptionError;
-import com.icecream.bot.core.action.capture.exception.CaptureExceptionEscape;
 import com.icecream.bot.core.action.capture.exception.CaptureExceptionFactory;
-import com.icecream.bot.core.action.capture.exception.CaptureExceptionFlee;
-import com.icecream.bot.core.action.capture.exception.CaptureExceptionMiss;
 import com.icecream.bot.core.log.Logger;
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
@@ -60,8 +56,21 @@ public class CapturePokemon {
                                     }
                                 })
                                 .retryWhen(errors -> errors
-                                        .takeWhile(error -> !(error instanceof CaptureExceptionFlee) && !(error instanceof CaptureExceptionError))
-                                        .flatMap(error -> (error instanceof CaptureExceptionEscape) || (error instanceof CaptureExceptionMiss) ? Observable.just(pokemon) : Observable.<CatchResult>error(error))
+                                        .takeWhile(error -> {
+                                            if (error instanceof CaptureException) {
+                                                CaptureException exception = (CaptureException) error;
+                                                return exception.isRetry();
+                                            }
+                                            return true;
+                                        })
+                                        .flatMap(error -> {
+                                            if (error instanceof CaptureException) {
+                                                CaptureException exception = (CaptureException) error;
+                                                if (exception.isRetry())
+                                                    return Observable.just(exception.getPokemon());
+                                            }
+                                            return Observable.<CatchResult>error(error);
+                                        })
                                 )
                 );
     }
