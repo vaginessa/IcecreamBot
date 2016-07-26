@@ -16,8 +16,10 @@
 
 package com.icecream.bot.core.scan;
 
+import com.icecream.bot.core.log.Log;
 import com.pokegoapi.api.map.Map;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
+
 import rx.Observable;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
@@ -29,6 +31,7 @@ public class ScanPokemon {
     public final Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
         return observable -> observable
                 .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
-                .flatMapIterable(catchables -> catchables);
+                .flatMapIterable(catchables -> catchables)
+                .doOnNext(Log::scanPokemon);
     }
 }
