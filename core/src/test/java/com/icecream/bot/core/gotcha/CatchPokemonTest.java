@@ -187,10 +187,10 @@ public class CatchPokemonTest {
                 .compose(CatchPokemon.catchIt())
                 .subscribe(mSubscriber);
 
-        verify(mPokemon, times(1)).catchPokemon(any());
-        verify(mPokemon, times(1)).encounterPokemon();
-        verify(mCatchResult, times(1)).getStatus();
-        verify(mEncounterResult, times(1)).wasSuccessful();
+        verify(mPokemon).catchPokemon(any());
+        verify(mPokemon).encounterPokemon();
+        verify(mCatchResult).getStatus();
+        verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
@@ -220,10 +220,10 @@ public class CatchPokemonTest {
                 .compose(CatchPokemon.catchIt())
                 .subscribe(mSubscriber);
 
-        verify(mPokemon, times(1)).catchPokemon(any());
-        verify(mPokemon, times(1)).encounterPokemon();
-        verify(mCatchResult, times(1)).getStatus();
-        verify(mEncounterResult, times(1)).wasSuccessful();
+        verify(mPokemon).catchPokemon(any());
+        verify(mPokemon).encounterPokemon();
+        verify(mCatchResult).getStatus();
+        verify(mEncounterResult).wasSuccessful();
 
         verifyNoMoreInteractions(mEncounterResult);
         verifyNoMoreInteractions(mCatchResult);
@@ -252,8 +252,8 @@ public class CatchPokemonTest {
                 .compose(CatchPokemon.catchIt())
                 .subscribe(mSubscriber);
 
-        verify(mEncounterResult, times(1)).wasSuccessful();
-        verify(mPokemon, times(1)).encounterPokemon();
+        verify(mEncounterResult).wasSuccessful();
+        verify(mPokemon).encounterPokemon();
         verify(mPokemon, never()).catchPokemon(any());
 
         verifyNoMoreInteractions(mEncounterResult);
@@ -267,7 +267,7 @@ public class CatchPokemonTest {
     }
 
     @Test
-    public void testCatchItHandlesExceptions() throws Exception {
+    public void testCatchItHandlesEncounterExceptions() throws Exception {
         //Given
         Observable<CatchablePokemon> observable = Observable.just(mPokemon);
 
@@ -284,6 +284,38 @@ public class CatchPokemonTest {
 
         mSubscriber.assertNotCompleted();
         mSubscriber.assertError(LoginFailedException.class);
+        mSubscriber.assertValueCount(0);
+
+        assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(0));
+        assertThat("Source emitted unexpected items", mSubscriber.getOnErrorEvents(), not(empty()));
+    }
+
+    @Test
+    public void testCatchItHandlesCatchExceptions() throws Exception {
+        //Given
+        Observable<CatchablePokemon> observable = Observable.just(mPokemon);
+
+        //When
+        doReturn(true).when(mEncounterResult).wasSuccessful();
+        doReturn(mEncounterResult).when(mPokemon).encounterPokemon();
+
+        doThrow(LoginFailedException.class).when(mPokemon).catchPokemon();
+
+        //Then
+        observable
+                .compose(CatchPokemon.catchIt())
+                .subscribe(mSubscriber);
+
+        verify(mPokemon).catchPokemon(any());
+        verify(mPokemon).encounterPokemon();
+        verify(mEncounterResult).wasSuccessful();
+
+        verifyZeroInteractions(mCatchResult);
+        verifyNoMoreInteractions(mPokemon);
+        verifyNoMoreInteractions(mEncounterResult);
+
+        mSubscriber.assertNotCompleted();
+        mSubscriber.assertError(NullPointerException.class);
         mSubscriber.assertValueCount(0);
 
         assertThat("Source emitted unexpected number of items", mSubscriber.getValueCount(), is(0));

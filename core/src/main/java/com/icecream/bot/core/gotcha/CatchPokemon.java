@@ -64,7 +64,8 @@ public final class CatchPokemon {
                                                 return Observable.just(pokemon);
                                             }
                                             return Observable.<CatchResult>error(error);
-                                        }))
+                                        })
+                                )
                 );
     }
 
