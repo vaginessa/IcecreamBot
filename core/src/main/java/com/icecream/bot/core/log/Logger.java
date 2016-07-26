@@ -22,11 +22,20 @@ import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 public final class Logger {
 
     private static final String FOUND = "FOUND";
+    private static final String CATCH = "CATCH";
 
     private Logger() {
     }
 
     public static void scanPokemon(final CatchablePokemon pokemon) {
+        Log.i(FOUND, "Pokemon #%3d %15s expires in %d seconds",
+                pokemon.getPokemonId().getNumber(),
+                pokemon.getPokemonId().name(),
+                Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
+        );
+    }
+
+    public static void capturePokemon(final CatchablePokemon pokemon) {
         Log.i(FOUND, "Pokemon #%3d %15s expires in %d seconds",
                 pokemon.getPokemonId().getNumber(),
                 pokemon.getPokemonId().name(),

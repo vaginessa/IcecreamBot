@@ -19,7 +19,7 @@ package com.icecream.bot.core;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-import com.icecream.bot.core.scan.ScanPokemon;
+import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.pokegoapi.api.PokemonGo;
 import com.pokegoapi.auth.PtcLogin;
 import com.pokegoapi.exceptions.LoginFailedException;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.capture.exception;
+package com.icecream.bot.core.action.capture.exception;
 
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class CaptureExceptionEscape extends CaptureException {
+public class CaptureExceptionMiss extends CaptureException {
 
-    CaptureExceptionEscape(CatchablePokemon pokemon) {
+    CaptureExceptionMiss(CatchablePokemon pokemon) {
         super(pokemon);
     }
 }

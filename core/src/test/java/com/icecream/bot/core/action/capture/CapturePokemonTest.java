@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.capture;
+package com.icecream.bot.core.action.capture;
 
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;

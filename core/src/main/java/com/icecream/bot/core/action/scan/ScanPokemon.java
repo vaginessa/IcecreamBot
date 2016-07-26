@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.scan;
+package com.icecream.bot.core.action.scan;
 
 import com.icecream.bot.core.log.Logger;
 import com.pokegoapi.api.map.Map;

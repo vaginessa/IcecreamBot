@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.capture;
+package com.icecream.bot.core.action.capture;
 
 import java.util.concurrent.Callable;
 
-import com.icecream.bot.core.capture.exception.CaptureExceptionError;
-import com.icecream.bot.core.capture.exception.CaptureExceptionEscape;
-import com.icecream.bot.core.capture.exception.CaptureExceptionFactory;
-import com.icecream.bot.core.capture.exception.CaptureExceptionFlee;
-import com.icecream.bot.core.capture.exception.CaptureExceptionMiss;
+import com.icecream.bot.core.action.capture.exception.CaptureExceptionError;
+import com.icecream.bot.core.action.capture.exception.CaptureExceptionEscape;
+import com.icecream.bot.core.action.capture.exception.CaptureExceptionFactory;
+import com.icecream.bot.core.action.capture.exception.CaptureExceptionFlee;
+import com.icecream.bot.core.action.capture.exception.CaptureExceptionMiss;
 import com.pokegoapi.api.inventory.Pokeball;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;

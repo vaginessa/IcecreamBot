@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.icecream.bot.core.scan;
+package com.icecream.bot.core.action.scan;
 
 import java.util.Arrays;
 import java.util.List;
@@ -83,6 +83,8 @@ public class ScanPokemonTest {
 
     @Test
     public void testDiscoverThemIsSorted() throws Exception {
+        System.out.println("Test: testDiscoverThemIsSorted");
+
         //Given
         Observable<Map> observable = Observable.just(mMap);
 
