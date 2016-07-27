@@ -29,6 +29,7 @@ public class ScanPokemon {
 
     public final Observable.Transformer<? super Map, ? extends CatchablePokemon> discoverThem() {
         return observable -> observable
+                .doOnNext(map -> ScanPokemonLog.scanPokemonStart())
                 .flatMap(map -> Observable.fromCallable(map::getCatchablePokemon))
                 .flatMapIterable(catchables -> catchables)
                 .toSortedList((pokemon1, pokemon2) -> Long.compare(pokemon1.getExpirationTimestampMs(), pokemon2.getExpirationTimestampMs()))

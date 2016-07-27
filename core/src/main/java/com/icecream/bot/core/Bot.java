@@ -17,51 +17,50 @@
 package com.icecream.bot.core;
 
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 
 import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
+import com.icecream.bot.core.api.Api;
+import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.PokemonGo;
-import com.pokegoapi.auth.PtcLogin;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
 
-import okhttp3.OkHttpClient;
 import rx.Observable;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class Bot {
 
-    private final PokemonGo mPokemonGo;
+    private final ScanPokemon mScanPokemon;
+    private final CapturePokemon mCapturePokemon;
 
-    @Inject
-    public Bot(@Nonnull PokemonGo pokemonGo) {
-        mPokemonGo = pokemonGo;
+    public Bot(@Nonnull ScanPokemon scanPokemon, @Nonnull CapturePokemon capturePokemon) {
+        mScanPokemon = scanPokemon;
+        mCapturePokemon = capturePokemon;
     }
 
-    public void start(double latitude, double longitude) throws LoginFailedException, RemoteServerException {
-        mPokemonGo.setLocation(latitude, longitude, 0);
-
-        ScanPokemon scanPokemon = new ScanPokemon();
-        CapturePokemon capturePokemon = new CapturePokemon();
-
-        Observable
-                .just(mPokemonGo.getMap())
-                .compose(scanPokemon.discoverThem())
-                .compose(capturePokemon.catchIt())
-                .subscribe(o -> {}, Throwable::printStackTrace);
+    public Observable<?> farmNearbyPokemons(double latitude, double longitude) {
+        return Observable
+                .fromCallable(() -> Api.getInstance().getPokemonGo())
+                .doOnNext(pokemonGo -> pokemonGo.setLocation(latitude, longitude, 0))
+                .map(PokemonGo::getMap)
+                .compose(mScanPokemon.discoverThem())
+                .compose(mCapturePokemon.catchIt());
     }
 
     public static void main(String[] args) throws LoginFailedException, RemoteServerException {
-        final String USER_NAME = "icecreamscanner";
-        final String USER_PASS = "icecream123";
 
+        // Santa Monica Pier
         final double LOCATION_LAT = 34.010112;
         final double LOCATION_LON = -118.495739;
 
-        OkHttpClient client = new OkHttpClient();
-
-        Bot bot = new Bot(new PokemonGo(new PtcLogin(client).login(USER_NAME, USER_PASS), client));
-        bot.start(LOCATION_LAT, LOCATION_LON);
+        // Farm pokemons
+        new Bot(new ScanPokemon(), new CapturePokemon())
+                .farmNearbyPokemons(LOCATION_LAT, LOCATION_LON)
+                .subscribe(
+                        o -> {},
+                        Throwable::printStackTrace,
+                        () -> Logs.d("DEBUG", "Completed")
+                );
     }
 }

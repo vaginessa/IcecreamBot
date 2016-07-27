@@ -18,7 +18,7 @@ package com.icecream.bot.core.action.capture;
 
 import com.icecream.bot.core.action.ActionLog;
 import com.icecream.bot.core.action.capture.exception.CaptureException;
-import com.icecream.bot.core.log.Log;
+import com.icecream.bot.core.util.Logs;
 import com.icecream.bot.core.util.Maths;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
@@ -33,14 +33,14 @@ final class CapturePokemonLog {
     }
 
     static void captureTryPokemon(CatchablePokemon pokemon, CatchResult result) {
-        Log.w(CATCH, "Pokemon %-15s with %3.2f%% miss rate",
+        Logs.w(CATCH, "Pokemon %-15s with %3.2f%% miss rate",
                 pokemon.getPokemonId().name(),
                 result.getMissPercent() * 100
         );
     }
 
     static void capturePokemon(CatchablePokemon pokemon, CatchResult result) {
-        Log.i(CATCH_SUCCESS, "Pokemon %-15s captured!",
+        Logs.i(CATCH_SUCCESS, "Pokemon %-15s captured!",
                 pokemon.getPokemonId().name(),
                 result.getXpList()
         );
@@ -52,7 +52,7 @@ final class CapturePokemonLog {
     }
 
     static void captureErrorPokemon(CaptureException error) {
-        Log.e(error.getReason(), "%s. Cannot catch pokemon %-15s",
+        Logs.e(error.getReason(), "%s. Cannot catch pokemon %-15s",
                 error.isRetry() ? "Will retry" : "Awww snap!",
                 error.getPokemon().getPokemonId().name()
         );

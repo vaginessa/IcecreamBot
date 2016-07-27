@@ -16,7 +16,7 @@
 
 package com.icecream.bot.core.action;
 
-import com.icecream.bot.core.log.Log;
+import com.icecream.bot.core.util.Logs;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public final class ActionLog {
@@ -27,7 +27,7 @@ public final class ActionLog {
     }
 
     public static void reward(int exp, int stardust, int candy) {
-        Log.d(REWARD, "Exp:%4d Stardust:%4d Candy:%2d",
+        Logs.d(REWARD, "Exp:%4d Stardust:%4d Candy:%2d",
                 exp,
                 stardust,
                 candy

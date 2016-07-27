@@ -16,19 +16,24 @@
 
 package com.icecream.bot.core.action.scan;
 
-import com.icecream.bot.core.log.Log;
+import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.map.pokemon.CatchablePokemon;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 final class ScanPokemonLog {
 
+    private static final String SCAN  = "SCAN";
     private static final String FOUND = "FOUND";
 
     private ScanPokemonLog() {
     }
 
+    static void scanPokemonStart() {
+        Logs.v(SCAN, "Scanning for nearby pokemons");
+    }
+
     static void scanPokemon(CatchablePokemon pokemon) {
-        Log.w(FOUND, "Pokemon %-15s expires in %d seconds",
+        Logs.w(FOUND, "Pokemon %-15s expires in %d seconds",
                 pokemon.getPokemonId().name(),
                 Math.round((pokemon.getExpirationTimestampMs() - System.currentTimeMillis()) / 1000.0)
         );
