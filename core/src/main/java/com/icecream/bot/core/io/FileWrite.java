@@ -8,55 +8,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class FileWrite {
-
-    private final String mFolder;
-    private final String mFile;
+public final class FileWrite extends FileIo {
 
     public FileWrite(@Nonnull String folder, @Nonnull String file) {
-        mFolder = folder;
-        mFile = file;
+        super(folder, file);
     }
 
     @Nonnull
-    private File createFolder() throws FileWriteException {
-        final File folder = new File(mFolder);
-
-        if (!folder.exists() && !folder.mkdirs()) {
-            throw new FileWriteException("Cannot create folder: " + mFolder);
-        }
-
-        return folder;
-    }
-
-    @Nonnull
-    private File createFile(@Nonnull File folder) throws FileWriteException {
-        final File file = new File(folder, mFile);
-
-        try {
-            if (!file.exists() && !file.createNewFile()) {
-                throw new FileWriteException("Cannot create file: " + mFile);
-            }
-        } catch (IOException exception) {
-            throw new FileWriteException("Cannot create file: " + mFile);
-        }
-
-        return file;
-    }
-
-    private Object objectToFile(@Nonnull final Object object) throws FileWriteException {
+    private String stringToFile(@Nonnull final String object) throws FileIoException {
         final File file = createFile(createFolder());
 
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write(object.toString());
+            writer.write(object);
         } catch (IOException exception) {
-            throw new FileWriteException("Cannot write into file: " + mFile);
+            throw new FileIoException("Cannot write into file: " + file.getName());
         }
 
         return object;
     }
 
-    public Observable<Object> write(@Nonnull final Object object) {
-        return Observable.fromCallable(() -> objectToFile(object));
+    public Observable<Object> write(@Nonnull final String object) {
+        return Observable.fromCallable(() -> stringToFile(object));
     }
 }

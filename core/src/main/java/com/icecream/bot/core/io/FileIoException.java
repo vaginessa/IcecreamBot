@@ -3,9 +3,9 @@ package com.icecream.bot.core.io;
 import java.io.IOException;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public class FileWriteException extends IOException {
+public class FileIoException extends IOException {
 
-    FileWriteException(String message) {
+    FileIoException(String message) {
         super(message);
     }
 }

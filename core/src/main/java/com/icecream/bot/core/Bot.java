@@ -21,6 +21,7 @@ import com.google.gson.GsonBuilder;
 import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.icecream.bot.core.api.Api;
+import com.icecream.bot.core.io.FileRead;
 import com.icecream.bot.core.io.FileWrite;
 import com.icecream.bot.core.setting.Configuration;
 import com.icecream.bot.core.util.Logs;
@@ -32,9 +33,11 @@ import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import rx.Observable;
 
 import javax.annotation.Nonnull;
-import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import static com.icecream.bot.core.Defaults.CONFIG_FILE;
+import static com.icecream.bot.core.Defaults.CONFIG_FOLDER;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class Bot {
@@ -89,7 +92,8 @@ public class Bot {
 
     public static void main(String[] args) throws InterruptedException, LoginFailedException, RemoteServerException, IOException {
 
-        System.out.println(System.getProperty("user.dir"));
+        FileWrite writeConfig = new FileWrite(CONFIG_FOLDER, CONFIG_FILE);
+        FileRead readConfig = new FileRead(CONFIG_FOLDER, CONFIG_FILE);
 
         Configuration configuration = Configuration.builder()
                 .setAccount(Configuration.Account.PTC)
@@ -101,15 +105,16 @@ public class Bot {
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .create();
 
-        String json = gson.toJson(configuration);
+        Observable
+                .just(gson.toJson(configuration))
+                .flatMap(writeConfig::write)
+                .subscribe(config -> System.out.println(config.toString()), throwable -> System.err.println("Fuck..."));
 
-        new FileWrite(Defaults.ROOT_FOLDER + File.separator + Defaults.CONFIG_FOLDER, Defaults.CONFIG_FILE)
-                .write(json)
-                .subscribe();
+        readConfig
+                .read()
+                .map(s -> gson.fromJson(s, Configuration.class))
+                .subscribe(config -> System.out.println(config.toString()), throwable -> System.err.println("Fuck..."));
 
-
-        System.out.println(json);
-        System.out.println(gson.fromJson(json, Configuration.class).toString());
 
         /*
         // Santa Monica Pier
