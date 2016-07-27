@@ -16,17 +16,18 @@
 
 package com.icecream.bot.core;
 
-import javax.annotation.Nonnull;
-
 import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.icecream.bot.core.api.Api;
 import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.PokemonGo;
-import com.pokegoapi.exceptions.LoginFailedException;
+import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.exceptions.RemoteServerException;
-
 import rx.Observable;
+import rx.Subscription;
+
+import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class Bot {
@@ -39,7 +40,7 @@ public class Bot {
         mCapturePokemon = capturePokemon;
     }
 
-    public Observable<?> farmNearbyPokemons(double latitude, double longitude) {
+    public Observable<CatchResult> farmNearbyPokemons(double latitude, double longitude) {
         return Observable
                 .fromCallable(Api::getInstance)
                 .doOnNext(api -> api.setLocation(latitude, longitude, 0))
@@ -48,21 +49,41 @@ public class Bot {
                 .compose(mCapturePokemon.catchIt());
     }
 
-    public static void main(String[] args) throws LoginFailedException, RemoteServerException {
+    public static Observable.Transformer<Throwable, Long> retryWithDelay() {
+        return observable -> observable.flatMap(error -> {
+            if (error instanceof RemoteServerException) {
+                Logs.e("SERVER", "Cannot reach the server, could be down?");
+                return Observable.timer(1, TimeUnit.SECONDS);
+            }
+            return Observable.error(error);
+        });
+    }
+
+    public static <T> Observable.Transformer<T, T> repeatWithDelay() {
+        return observable -> {
+            Logs.d("Completed, let's repeat");
+            return observable.delay(10, TimeUnit.SECONDS);
+        };
+    }
+
+    public static void main(String[] args) throws InterruptedException {
 
         // Santa Monica Pier
         final double LOCATION_LAT = 34.010112;
         final double LOCATION_LON = -118.495739;
 
         // Farm pokemons
-        new Bot(new ScanPokemon(), new CapturePokemon())
-                .farmNearbyPokemons(LOCATION_LAT, LOCATION_LON)
-                .subscribe(
-                        o -> {},
-                        Throwable::printStackTrace,
-                        () -> Logs.d("Completed")
-                );
+        Bot bot = new Bot(new ScanPokemon(), new CapturePokemon());
 
+        Subscription subscription = bot
+                .farmNearbyPokemons(LOCATION_LAT, LOCATION_LON)
+                .retryWhen(errors -> errors.compose(retryWithDelay()))
+                .repeatWhen(completed -> completed.compose(repeatWithDelay()))
+                .subscribe();
+
+        while (!subscription.isUnsubscribed()) {
+            Thread.sleep(1000);
+        }
 /*
         PokemonGo pokemonGo = Api.getInstance();
 
@@ -100,4 +121,5 @@ public class Bot {
                 .forEach(point -> Logs.d("%.2f m", Distances.get(pokemonGo, point)));
                 */
     }
+
 }
