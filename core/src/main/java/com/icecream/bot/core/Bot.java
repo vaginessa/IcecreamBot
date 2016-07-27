@@ -41,8 +41,8 @@ public class Bot {
 
     public Observable<?> farmNearbyPokemons(double latitude, double longitude) {
         return Observable
-                .fromCallable(() -> Api.getInstance().getPokemonGo())
-                .doOnNext(pokemonGo -> pokemonGo.setLocation(latitude, longitude, 0))
+                .fromCallable(Api::getInstance)
+                .doOnNext(api -> api.setLocation(latitude, longitude, 0))
                 .map(PokemonGo::getMap)
                 .compose(mScanPokemon.discoverThem())
                 .compose(mCapturePokemon.catchIt());
@@ -60,7 +60,44 @@ public class Bot {
                 .subscribe(
                         o -> {},
                         Throwable::printStackTrace,
-                        () -> Logs.d("DEBUG", "Completed")
+                        () -> Logs.d("Completed")
                 );
+
+/*
+        PokemonGo pokemonGo = Api.getInstance();
+
+        Observable
+                .zip(
+                        Observable.range(1, 10),
+                        Observable.interval(2, TimeUnit.SECONDS),
+                        (integer, time) -> integer
+                )
+                .doOnNext(System.out::println)
+                .toList()
+                .toBlocking()
+                .first();
+        */
+
+
+
+        /*
+        Observable
+                .fromCallable(() -> pokemonGo.getMap().getSpawnPoints())
+                .flatMapIterable(points -> points)
+                .toSortedList((point1, point2) -> Double.compare(Distances.get(pokemonGo, point1), Distances.get(pokemonGo, point2)))
+                .flatMapIterable(points -> points)
+                .take(15)
+                .forEach(point -> Logs.d("%.2f m", Distances.get(pokemonGo, point)));
+
+        System.out.println("OOOOOOOOOOOOOOOOOOKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+
+        Observable
+                .fromCallable(() -> pokemonGo.getMap().getDecimatedSpawnPoints())
+                .flatMapIterable(points -> points)
+                .toSortedList((point1, point2) -> Double.compare(Distances.get(pokemonGo, point1), Distances.get(pokemonGo, point2)))
+                .flatMapIterable(points -> points)
+                .take(5)
+                .forEach(point -> Logs.d("%.2f m", Distances.get(pokemonGo, point)));
+                */
     }
 }

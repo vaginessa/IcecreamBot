@@ -37,11 +37,11 @@ public final class Logs {
     }
 
     public static void a(String tag, String format, Object... objects) {
-        log(tag, COLOR_LIGHT_BLUE, format, objects);
+        log(tag, COLOR_DARK_BLUE, format, objects);
     }
 
-    public static void d(String tag, String format, Object... objects) {
-        log(tag, COLOR_DARK_BLUE, format, objects);
+    public static void d(String format, Object... objects) {
+        log("DEBUG", COLOR_LIGHT_BLUE, format, objects);
     }
 
     public static void e(String tag, String format, Object... objects) {

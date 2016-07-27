@@ -16,7 +16,10 @@
 
 package com.icecream.bot.core.api;
 
+import javax.annotation.Nonnull;
+
 import com.pokegoapi.api.PokemonGo;
+import com.pokegoapi.auth.CredentialProvider;
 import com.pokegoapi.auth.PtcCredentialProvider;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
@@ -24,35 +27,27 @@ import com.pokegoapi.exceptions.RemoteServerException;
 import okhttp3.OkHttpClient;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public final class Api {
+public final class Api extends PokemonGo {
 
     // Configurable in the future
     private static final String USER_NAME = "icecreamscanner";
     private static final String USER_PASS = "icecream123";
 
-    private PokemonGo mPokemonGo;
-    private OkHttpClient mClient;
-
     private static volatile Api sInstance = null;
 
-    public static Api getInstance() {
+    public static Api getInstance() throws LoginFailedException, RemoteServerException {
         if (sInstance == null) {
             synchronized (Api.class) {
                 if (sInstance == null) {
-                    sInstance = new Api();
+                    OkHttpClient client = new OkHttpClient();
+                    sInstance = new Api(new PtcCredentialProvider(client, USER_NAME, USER_PASS), client);
                 }
             }
         }
         return sInstance;
     }
 
-    private Api() {
-        mClient = new OkHttpClient();
-    }
-
-    public synchronized PokemonGo getPokemonGo() throws LoginFailedException, RemoteServerException {
-        if (mPokemonGo == null)
-            mPokemonGo = new PokemonGo(new PtcCredentialProvider(mClient, USER_NAME, USER_PASS), mClient);
-        return mPokemonGo;
+    public Api(@Nonnull CredentialProvider provider, @Nonnull OkHttpClient client) throws LoginFailedException, RemoteServerException {
+        super(provider, client);
     }
 }

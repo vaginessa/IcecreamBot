@@ -27,7 +27,7 @@ public final class ActionLog {
     }
 
     public static void reward(int exp, int stardust, int candy) {
-        Logs.d(REWARD, "Exp:%4d Stardust:%4d Candy:%2d",
+        Logs.a(REWARD, "Exp:%4d Stardust:%4d Candy:%2d",
                 exp,
                 stardust,
                 candy
