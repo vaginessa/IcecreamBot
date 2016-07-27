@@ -42,6 +42,7 @@ public class CapturePokemon {
                 .compose(tryCatch());
     }
 
+    // TODO handle encounter errors
     private Observable.Transformer<? super CatchablePokemon, ? extends CatchablePokemon> tryEncounter() {
         return observable -> observable
                 .flatMap(pokemon -> Observable
