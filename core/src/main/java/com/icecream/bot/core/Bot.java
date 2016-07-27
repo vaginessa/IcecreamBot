@@ -22,6 +22,7 @@ import com.icecream.bot.core.api.Api;
 import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.PokemonGo;
 import com.pokegoapi.api.map.pokemon.CatchResult;
+import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
 import rx.Observable;
 import rx.Subscription;
@@ -40,10 +41,27 @@ public class Bot {
         mCapturePokemon = capturePokemon;
     }
 
-    public Observable<CatchResult> farmNearbyPokemons(double latitude, double longitude) {
+    /*
+    public Observable<CatchResult> farmNearbyPokemons(Poke) {
         return Observable
                 .fromCallable(Api::getInstance)
                 .doOnNext(api -> api.setLocation(latitude, longitude, 0))
+                .map(PokemonGo::getMap)
+                .compose(mScanPokemon.discoverThem())
+                .compose(mCapturePokemon.catchIt());
+    }
+
+
+    public Observable.Transformer<? extends PokemonGo, Object> farmNearbyPokemons() {
+        return observable -> observable
+                .map(PokemonGo::getMap)
+                .compose(mScanPokemon.discoverThem())
+                .compose(mCapturePokemon.catchIt());
+    }
+    */
+
+    public Observable.Transformer<Api, CatchResult> farmPokemons() {
+        return observable -> observable
                 .map(PokemonGo::getMap)
                 .compose(mScanPokemon.discoverThem())
                 .compose(mCapturePokemon.catchIt());
@@ -60,23 +78,26 @@ public class Bot {
     }
 
     public static <T> Observable.Transformer<T, T> repeatWithDelay() {
-        return observable -> {
-            Logs.d("Completed, let's repeat");
-            return observable.delay(10, TimeUnit.SECONDS);
-        };
+        return observable -> observable.delay(10, TimeUnit.SECONDS);
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, LoginFailedException, RemoteServerException {
 
         // Santa Monica Pier
         final double LOCATION_LAT = 34.010112;
         final double LOCATION_LON = -118.495739;
 
         // Farm pokemons
-        Bot bot = new Bot(new ScanPokemon(), new CapturePokemon());
+        //PokemonGo pokemonGo = ;
+        ScanPokemon scanPokemon = new ScanPokemon();
+        CapturePokemon capturePokemon = new CapturePokemon();
 
-        Subscription subscription = bot
-                .farmNearbyPokemons(LOCATION_LAT, LOCATION_LON)
+        Bot bot = new Bot(scanPokemon, capturePokemon);
+
+        Subscription subscription = Observable
+                .fromCallable(Api::getInstance)
+                .doOnNext(api -> api.setLocation(LOCATION_LAT, LOCATION_LON, 0))
+                .compose(bot.farmPokemons())
                 .retryWhen(errors -> errors.compose(retryWithDelay()))
                 .repeatWhen(completed -> completed.compose(repeatWithDelay()))
                 .subscribe();
@@ -84,6 +105,20 @@ public class Bot {
         while (!subscription.isUnsubscribed()) {
             Thread.sleep(1000);
         }
+
+        /*
+        new GoogleCredentialProvider(new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("200.2.15.207", 3128))).build(), new GoogleCredentialProvider.OnGoogleLoginOAuthCompleteListener() {
+            @Override
+            public void onInitialOAuthComplete(GoogleAuthJson googleAuthJson) {
+                Logs.d("Initial");
+            }
+
+            @Override
+            public void onTokenIdReceived(GoogleAuthTokenJson googleAuthTokenJson) {
+                Logs.d("Received");
+            }
+        });
+        */
 /*
         PokemonGo pokemonGo = Api.getInstance();
 

@@ -45,6 +45,7 @@ public final class Api extends PokemonGo {
                             .build();
 
                     sInstance = new Api(new PtcCredentialProvider(client, USER_NAME, USER_PASS), client);
+                    //sInstance = new Api(new GoogleCredentialProvider(client, "1/cJH9dtnlCEy4qbcGk5aynCHNOOkpC8Bg6RhXOvOjhGg"), client);
                 }
             }
         }
