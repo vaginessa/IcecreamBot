@@ -1,4 +1,4 @@
-package com.icecream.bot.core.setting;
+package com.icecream.bot.core.settings;
 
 import com.google.auto.value.AutoValue;
 import com.google.gson.Gson;
@@ -7,19 +7,19 @@ import com.google.gson.annotations.SerializedName;
 
 @AutoValue
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
-public abstract class Configuration {
+public abstract class Settings {
 
     public enum Account {
         PTC,
         GOOGLE
     }
 
-    public static TypeAdapter<Configuration> typeAdapter(Gson gson) {
-        return new AutoValue_Configuration.GsonTypeAdapter(gson);
+    public static TypeAdapter<Settings> typeAdapter(Gson gson) {
+        return new AutoValue_Settings.GsonTypeAdapter(gson);
     }
 
     public static Builder builder() {
-        return new AutoValue_Configuration.Builder();
+        return new AutoValue_Settings.Builder();
     }
 
     @SerializedName("account")
@@ -35,6 +35,6 @@ public abstract class Configuration {
         public abstract Builder setLatitude(double latitude);
         public abstract Builder setLongitude(double longitude);
 
-        public abstract Configuration build();
+        public abstract Settings build();
     }
 }

@@ -21,9 +21,9 @@ import com.google.gson.GsonBuilder;
 import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.icecream.bot.core.api.Api;
-import com.icecream.bot.core.io.FileRead;
-import com.icecream.bot.core.io.FileWrite;
-import com.icecream.bot.core.setting.Configuration;
+import com.icecream.bot.core.settings.Settings;
+import com.icecream.bot.core.settings.json.JsonReader;
+import com.icecream.bot.core.settings.json.JsonWriter;
 import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.PokemonGo;
 import com.pokegoapi.api.map.pokemon.CatchResult;
@@ -33,11 +33,12 @@ import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import rx.Observable;
 
 import javax.annotation.Nonnull;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import static com.icecream.bot.core.Defaults.CONFIG_FILE;
-import static com.icecream.bot.core.Defaults.CONFIG_FOLDER;
+import static com.icecream.bot.core.Defaults.SETTINGS_FILE;
+import static com.icecream.bot.core.Defaults.SETTINGS_FOLDER;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
 public class Bot {
@@ -92,29 +93,39 @@ public class Bot {
 
     public static void main(String[] args) throws InterruptedException, LoginFailedException, RemoteServerException, IOException {
 
-        FileWrite writeConfig = new FileWrite(CONFIG_FOLDER, CONFIG_FILE);
-        FileRead readConfig = new FileRead(CONFIG_FOLDER, CONFIG_FILE);
-
-        Configuration configuration = Configuration.builder()
-                .setAccount(Configuration.Account.PTC)
+        Settings dummy = Settings.builder()
+                .setAccount(Settings.Account.PTC)
                 .setLatitude(34.010112)
                 .setLongitude(-118.495739)
                 .build();
 
         Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
                 .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
                 .create();
 
-        Observable
-                .just(gson.toJson(configuration))
-                .flatMap(writeConfig::write)
-                .subscribe(config -> System.out.println(config.toString()), throwable -> System.err.println("Fuck..."));
+        JsonWriter writer = new JsonWriter(SETTINGS_FOLDER, SETTINGS_FILE);
+        JsonReader reader = new JsonReader(SETTINGS_FOLDER, SETTINGS_FILE);
 
-        readConfig
+        reader
                 .read()
-                .map(s -> gson.fromJson(s, Configuration.class))
-                .subscribe(config -> System.out.println(config.toString()), throwable -> System.err.println("Fuck..."));
-
+                .retryWhen(errors -> errors
+                        .takeUntil(e -> !(e instanceof FileNotFoundException))
+                        .flatMap(o -> {
+                            if (o instanceof FileNotFoundException)
+                                return errors
+                                        .map(e -> dummy)
+                                        .map(gson::toJson)
+                                        .flatMap(writer::write);
+                            return Observable.error(o);
+                        })
+                )
+                .map(json -> gson.fromJson(json, Settings.class))
+                .subscribe(
+                        settings -> System.out.println(String.format("Found settings: %s", settings)),
+                        throwable -> System.err.println(String.format("%s: %s", throwable.getClass().getSimpleName(), throwable.getMessage())),
+                        () -> System.out.println("Completed")
+                );
 
         /*
         // Santa Monica Pier

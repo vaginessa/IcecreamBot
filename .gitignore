@@ -1,6 +1,6 @@
 # Folders
-configuration
-.idea
-.gradle
+/settings
+/.idea
+/.gradle
 
 # Files
