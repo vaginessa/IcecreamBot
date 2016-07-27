@@ -16,18 +16,24 @@
 
 package com.icecream.bot.core;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.icecream.bot.core.action.capture.CapturePokemon;
 import com.icecream.bot.core.action.scan.ScanPokemon;
 import com.icecream.bot.core.api.Api;
+import com.icecream.bot.core.io.FileWrite;
+import com.icecream.bot.core.setting.Configuration;
 import com.icecream.bot.core.util.Logs;
 import com.pokegoapi.api.PokemonGo;
 import com.pokegoapi.api.map.pokemon.CatchResult;
 import com.pokegoapi.exceptions.LoginFailedException;
 import com.pokegoapi.exceptions.RemoteServerException;
+import com.ryanharter.auto.value.gson.AutoValueGsonTypeAdapterFactory;
 import rx.Observable;
-import rx.Subscription;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings({"unused", "FieldCanBeLocal", "WeakerAccess"})
@@ -81,8 +87,31 @@ public class Bot {
         return observable -> observable.delay(10, TimeUnit.SECONDS);
     }
 
-    public static void main(String[] args) throws InterruptedException, LoginFailedException, RemoteServerException {
+    public static void main(String[] args) throws InterruptedException, LoginFailedException, RemoteServerException, IOException {
 
+        System.out.println(System.getProperty("user.dir"));
+
+        Configuration configuration = Configuration.builder()
+                .setAccount(Configuration.Account.PTC)
+                .setLatitude(34.010112)
+                .setLongitude(-118.495739)
+                .build();
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapterFactory(new AutoValueGsonTypeAdapterFactory())
+                .create();
+
+        String json = gson.toJson(configuration);
+
+        new FileWrite(Defaults.ROOT_FOLDER + File.separator + Defaults.CONFIG_FOLDER, Defaults.CONFIG_FILE)
+                .write(json)
+                .subscribe();
+
+
+        System.out.println(json);
+        System.out.println(gson.fromJson(json, Configuration.class).toString());
+
+        /*
         // Santa Monica Pier
         final double LOCATION_LAT = 34.010112;
         final double LOCATION_LON = -118.495739;
@@ -106,7 +135,7 @@ public class Bot {
             Thread.sleep(1000);
         }
 
-        /*
+
         new GoogleCredentialProvider(new OkHttpClient.Builder().proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("200.2.15.207", 3128))).build(), new GoogleCredentialProvider.OnGoogleLoginOAuthCompleteListener() {
             @Override
             public void onInitialOAuthComplete(GoogleAuthJson googleAuthJson) {
@@ -119,7 +148,7 @@ public class Bot {
             }
         });
         */
-/*
+        /*
         PokemonGo pokemonGo = Api.getInstance();
 
         Observable
