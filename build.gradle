@@ -10,6 +10,7 @@ subprojects {
 
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8

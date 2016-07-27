@@ -9,7 +9,7 @@ jar {
 
 dependencies {
     // Api
-    compile fileTree(dir: 'libs', include: ['api.jar'])
+    compile 'com.github.Grover-c13:PokeGOAPI-Java:0.2'
 
     // Rx
     compile 'io.reactivex:rxjava:1.1.7'
